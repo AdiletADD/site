@@ -1,0 +1,179 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Data.SqlClient;
+using System.Data.Entity;
+
+namespace Morfo
+{
+    public partial class AddToDB : MetroFramework.Forms.MetroForm
+    {
+        Model db;
+        public AddToDB()
+        {
+            InitializeComponent();
+
+            db = new Model();
+            db.Ontoes.Load();
+            dataGridView1.DataSource = db.Ontoes.Local.ToBindingList();
+        }
+
+        // Добавление данных в базу
+        private async void tileInsert_Click(object sender, EventArgs e)
+        {
+            Onto onto = new Onto();
+
+            onto.TAG = txtTag.Text;
+            onto.NAME_RUS = txtNameRus.Text;
+            onto.NAME_KYRG = txtNameKyrg.Text;
+            onto.PARTofSPEECH = txtPartOfSpeech.Text;
+            onto.PROPERTIES = txtProperties.Text;
+            onto.PREPRO = txtPreproperties.Text;
+            onto.TYPE = txtType.Text;
+            onto.AFFIX01 = txt01.Text;
+            onto.AFFIX02 = txt02.Text;
+            onto.AFFIX03 = txt03.Text;
+            onto.AFFIX04 = txt04.Text;
+            onto.AFFIX05 = txt05.Text;
+            onto.AFFIX06 = txt06.Text;
+            onto.AFFIX07 = txt07.Text;
+            onto.AFFIX08 = txt08.Text;
+            onto.AFFIX09 = txt09.Text;
+            onto.AFFIX10 = txt10.Text;
+            onto.AFFIX11 = txt11.Text;
+            onto.AFFIX12 = txt12.Text;
+            onto.AFFIX13 = txt13.Text;
+            onto.AFFIX14 = txt14.Text;
+            onto.AFFIX15 = txt15.Text;
+            onto.AFFIX16 = txt16.Text;
+
+            db.Ontoes.Add(onto);
+            await db.SaveChangesAsync();
+            ClearTxts(tabPageInsert);
+
+            MessageBox.Show("Добавлено новое поле");
+            tabControl1.SelectedTab = tabPageSelect;
+        }
+
+        // Получение данных
+        private void tabPageUpdate_Enter(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                string tag = dataGridView1.SelectedRows[0].Cells["TAG"].Value.ToString();
+                Onto onto = db.Ontoes.Find(tag);
+
+                txtTag1.Text = onto.TAG;
+                txtNameRus1.Text = onto.NAME_RUS;
+                txtNameKyrg1.Text = onto.NAME_KYRG;
+                txtPartOfSpeech1.Text = onto.PARTofSPEECH;
+                txtProperties1.Text = onto.PROPERTIES;
+                txtPrepro1.Text = onto.PREPRO;
+                txtType1.Text = onto.TYPE;
+                txt01u.Text = onto.AFFIX01;
+                txt02u.Text = onto.AFFIX02;
+                txt03u.Text = onto.AFFIX03;
+                txt04u.Text = onto.AFFIX04;
+                txt05u.Text = onto.AFFIX05;
+                txt06u.Text = onto.AFFIX06;
+                txt07u.Text = onto.AFFIX07;
+                txt08u.Text = onto.AFFIX08;
+                txt09u.Text = onto.AFFIX09;
+                txt10u.Text = onto.AFFIX10;
+                txt11u.Text = onto.AFFIX11;
+                txt12u.Text = onto.AFFIX12;
+                txt13u.Text = onto.AFFIX13;
+                txt14u.Text = onto.AFFIX14;
+                txt15u.Text = onto.AFFIX15;
+                txt16u.Text = onto.AFFIX16;
+            }
+            else
+            {
+                tabControl1.SelectedTab = tabPageSelect;
+                MessageBox.Show("Не выбрано поле для изменений");
+            }
+        }
+
+        // Обновление данных
+        private async void tileUpdate_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedRows.Count > 0)
+            {
+                string tag = dataGridView1.SelectedRows[0].Cells["TAG"].Value.ToString();
+                Onto onto = db.Ontoes.Find(tag);
+                
+                onto.TAG = txtTag1.Text;
+                onto.NAME_RUS = txtNameRus1.Text;
+                onto.NAME_KYRG = txtNameKyrg1.Text;
+                onto.PARTofSPEECH = txtPartOfSpeech1.Text;
+                onto.PROPERTIES = txtProperties1.Text;
+                onto.PREPRO = txtPrepro1.Text;
+                onto.TYPE = txtType1.Text;
+                onto.AFFIX01 = txt01u.Text;
+                onto.AFFIX02 = txt02u.Text;
+                onto.AFFIX03 = txt03u.Text;
+                onto.AFFIX04 = txt04u.Text;
+                onto.AFFIX05 = txt05u.Text;
+                onto.AFFIX06 = txt06u.Text;
+                onto.AFFIX07 = txt07u.Text;
+                onto.AFFIX08 = txt08u.Text;
+                onto.AFFIX09 = txt09u.Text;
+                onto.AFFIX10 = txt10u.Text;
+                onto.AFFIX11 = txt11u.Text;
+                onto.AFFIX12 = txt12u.Text;
+                onto.AFFIX13 = txt13u.Text;
+                onto.AFFIX14 = txt14u.Text;
+                onto.AFFIX15 = txt15u.Text;
+                onto.AFFIX16 = txt16u.Text;
+                
+                db.Entry(onto).State = EntityState.Modified;
+                await db.SaveChangesAsync();
+
+                MessageBox.Show("Поле обновлено");
+                tabControl1.SelectedTab = tabPageSelect;
+            }
+        }
+
+        // Удаление данных
+        private async void tileDelete_Click(object sender, EventArgs e)
+        {
+            if (!String.IsNullOrEmpty(comboBox1.SelectedValue.ToString()))
+            {
+                Onto onto = db.Ontoes.Find(comboBox1.SelectedValue);
+                db.Ontoes.Remove(onto);
+                await db.SaveChangesAsync();
+                ClearTxts(tabPageDelete);
+
+                MessageBox.Show("Объект удален");
+                tabControl1.SelectedTab = tabPageSelect;
+            }                
+        }
+
+        // Очищение полей
+        private void ClearTxts(Control cont)
+        {
+            foreach (Control c in cont.Controls)
+            {
+                if (c.GetType() == typeof(TextBox))
+                {
+                    ((TextBox)(c)).Text = string.Empty;
+                }
+            }
+        }
+
+        // Лист TAGов
+        private void tabPageDelete_Enter(object sender, EventArgs e)
+        {
+            List<Onto> ontoes = db.Ontoes.ToList();
+            comboBox1.DataSource = ontoes;
+            comboBox1.ValueMember = "TAG";
+            comboBox1.DisplayMember = "TAG";
+        }
+    }
+}
